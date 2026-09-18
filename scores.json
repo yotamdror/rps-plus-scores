@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "runId": "e2e-probe-0000000001",
+    "name": "PROBE",
+    "planet": "MARS",
+    "score": 1234,
+    "coin": 5000000000,
+    "furthest": 3,
+    "won": false,
+    "when": 1789774489000,
+    "build": "v0.3 e2e"
+  }
+]
