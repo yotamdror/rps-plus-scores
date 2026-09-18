@@ -1,0 +1,42 @@
+name: Append score
+
+on:
+  repository_dispatch:
+    types: [score, rename]
+
+concurrency: scores
+
+permissions:
+  contents: write
+
+jobs:
+  append:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # client_payload is already {type:'score'|'rename', entry} — the same
+      # shape applyDispatch()/append.mjs takes directly, so it passes straight
+      # through as SCORES_PAYLOAD without reshaping. See README.md.
+      - name: Append to scores.json
+        env:
+          SCORES_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: node append.mjs scores.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scores.json
+          if git diff --cached --quiet; then
+            echo "scores.json unchanged."
+            exit 0
+          fi
+          git commit -m "Append ${{ github.event.action }} dispatch (run ${{ github.run_id }})"
+          git push origin HEAD:main
