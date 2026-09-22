@@ -1,5 +1,16 @@
 [
   {
+    "runId": "e38632e4d3a3426d907bc201145be6dd",
+    "name": "TERRA",
+    "planet": "EARTH",
+    "score": 6546,
+    "coin": 17000000000,
+    "furthest": 2,
+    "won": false,
+    "when": 1790042472547,
+    "build": "v0.3 · DIALECT SLICE"
+  },
+  {
     "runId": "eb57fc57477a4039a0fb03702684f19f",
     "name": "TESTER",
     "planet": "VENUS",
