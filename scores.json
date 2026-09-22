@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "runId": "eb57fc57477a4039a0fb03702684f19f",
+    "name": "TESTER",
+    "planet": "VENUS",
+    "score": 5285,
+    "coin": 8000000000,
+    "furthest": 2,
+    "won": false,
+    "when": 1790040560055,
+    "build": "v0.3 · DIALECT SLICE"
+  }
+]
