@@ -1,24 +1,41 @@
 [
   {
+    "runId": "b530bacdf1894fa2a181b752a1cac028",
+    "name": "CALORIS",
+    "planet": "MERCURY",
+    "sponsor": "paperCorp",
+    "score": 9870,
+    "coin": 9000000000,
+    "furthest": 2,
+    "won": false,
+    "when": 1791027332523,
+    "build": "v0.3 · DIALECT SLICE",
+    "grid": "PR"
+  },
+  {
     "runId": "e38632e4d3a3426d907bc201145be6dd",
     "name": "TERRA",
     "planet": "EARTH",
+    "sponsor": null,
     "score": 6546,
     "coin": 17000000000,
     "furthest": 2,
     "won": false,
     "when": 1790042472547,
-    "build": "v0.3 · DIALECT SLICE"
+    "build": "v0.3 · DIALECT SLICE",
+    "grid": null
   },
   {
     "runId": "eb57fc57477a4039a0fb03702684f19f",
     "name": "TESTER",
     "planet": "VENUS",
+    "sponsor": null,
     "score": 5285,
     "coin": 8000000000,
     "furthest": 2,
     "won": false,
     "when": 1790040560055,
-    "build": "v0.3 · DIALECT SLICE"
+    "build": "v0.3 · DIALECT SLICE",
+    "grid": null
   }
 ]
