@@ -25,6 +25,14 @@ test('append: a valid score entry lands in an empty board', () => {
   assert.equal(next[0].runId, 'a'.repeat(32));
   assert.equal(next[0].name, 'ROOKIE');
   assert.equal(next[0].planet, 'MARS');
+  assert.equal(next[0].sponsor, null);
+});
+
+test('sponsor: valid key persists; missing is null; unknown key is rejected', () => {
+  const row=applyDispatch([],score(scoreEntry({sponsor:'adAstra'})))[0];
+  assert.equal(row.sponsor,'adAstra');
+  assert.equal(JSON.parse(stringifyScores([scoreEntry()]))[0].sponsor,null);
+  assert.throws(()=>applyDispatch([],score(scoreEntry({sponsor:'unknown'}))),ValidationError);
 });
 
 test('append: score/coin/furthest/won/when/build all round-trip', () => {
@@ -154,4 +162,26 @@ test('stringifyScores is deterministic regardless of input key order', () => {
   const b = { build: 'b', when: 1, won: false, furthest: 1, coin: 0, score: 1, planet: 'MARS', name: 'A', runId: 'z'.repeat(32) };
   assert.equal(stringifyScores([a]), stringifyScores([b]));
   assert.ok(stringifyScores([a]).endsWith('\n'));
+});
+
+test('32-character names survive score and rename; 33 are bounded',()=>{
+ const runId='a'.repeat(32), full='REPEAT PURCHASE #1234567890123';
+ let board=applyDispatch([],score(scoreEntry({name:'  '+full+'  '})));
+ assert.equal(board[0].name,full);
+ board=applyDispatch(board,rename(runId,'x'.repeat(32)));
+ assert.equal(board[0].name,'X'.repeat(32));
+ board=applyDispatch(board,rename(runId,'y'.repeat(33)));
+ assert.equal(board[0].name,'Y'.repeat(32));
+ board=applyDispatch([],score(scoreEntry({name:'z'.repeat(33)})));
+ assert.equal(board[0].name,'Z'.repeat(32));
+});
+
+test('grid: valid persists; missing, too long or bad characters become null', () => {
+  assert.equal(applyDispatch([], score(scoreEntry({ grid: 'RPSRPS' })))[0].grid, 'RPSRPS');
+  assert.equal(applyDispatch([], score(scoreEntry({ grid: '' })))[0].grid, '');
+  assert.equal(applyDispatch([], score(scoreEntry()))[0].grid, null);
+  assert.equal(applyDispatch([], score(scoreEntry({ grid: 'R'.repeat(41) })))[0].grid, null);
+  assert.equal(applyDispatch([], score(scoreEntry({ grid: 'RPX' })))[0].grid, null);
+  assert.equal(JSON.parse(stringifyScores([scoreEntry()]))[0].grid, null);
+  assert.equal(JSON.parse(stringifyScores([scoreEntry({ grid: 'RP' })]))[0].grid, 'RP');
 });

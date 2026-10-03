@@ -13,9 +13,11 @@ import { fileURLToPath } from 'node:url';
 // The eight home worlds (§5c) — kept in sync with PLANETS in src/js/22-ceremony.js
 // by hand; this repo is deliberately dependency-free and does not import the game.
 export const PLANETS = ['MERCURY', 'VENUS', 'EARTH', 'MARS', 'JUPITER', 'SATURN', 'URANUS', 'NEPTUNE'];
+export const SPONSORS = ['kuiper','ponzi','adAstra','paperCorp','solarTie'];
 export const MAX_ROWS = 100;
-export const NAME_MAX = 14;
+export const NAME_MAX = 32;
 const BUILD_MAX = 60;
+const GRID_RE = /^[RPS]{0,40}$/;
 const RUNID_RE = /^[A-Za-z0-9_-]{16,32}$/;
 
 export class ValidationError extends Error {}
@@ -27,7 +29,7 @@ function validateRunId(runId) {
   return runId;
 }
 // Bounded to NAME_MAX and uppercased rather than rejected — the client already
-// enforces maxlength=14 on both name inputs, so an overlong name here means an
+// enforces maxlength=32 on both end-name inputs, so an overlong name here means an
 // older/different client, not a malformed payload worth failing the whole dispatch.
 function validateName(name) {
   if (typeof name !== 'string') throw new ValidationError('name must be a string');
@@ -48,8 +50,11 @@ function validateScoreEntry(entry) {
   if (typeof entry.won !== 'boolean') throw new ValidationError('won must be a boolean');
   if (!Number.isInteger(entry.when) || entry.when <= 0) throw new ValidationError('when must be an epoch-ms integer');
   if (typeof entry.build !== 'string' || !entry.build.trim()) throw new ValidationError('build must be a short string');
+  if (entry.sponsor != null && !SPONSORS.includes(entry.sponsor)) throw new ValidationError('sponsor must be a known key or null');
+  // grid: the winning hands in order (run-share-grid). Optional; missing or invalid -> null.
+  const grid = typeof entry.grid === 'string' && GRID_RE.test(entry.grid) ? entry.grid : null;
   return {
-    runId, name, planet: entry.planet.toUpperCase(),
+    runId, name, planet: entry.planet.toUpperCase(), sponsor:entry.sponsor??null, grid,
     score: entry.score, coin: entry.coin, furthest: entry.furthest, won: entry.won,
     when: entry.when, build: entry.build.trim().slice(0, BUILD_MAX)
   };
@@ -88,8 +93,8 @@ export function applyDispatch(current, dispatch) {
   throw new ValidationError(`unknown dispatch type: ${dispatch.type}`);
 }
 
-const ROW_KEYS = ['runId', 'name', 'planet', 'score', 'coin', 'furthest', 'won', 'when', 'build'];
-const canonicalRow = row => ROW_KEYS.reduce((out, k) => { out[k] = row[k]; return out; }, {});
+const ROW_KEYS = ['runId', 'name', 'planet', 'sponsor', 'score', 'coin', 'furthest', 'won', 'when', 'build', 'grid'];
+const canonicalRow = row => ROW_KEYS.reduce((out, k) => { out[k] = (k==='sponsor'||k==='grid')?row[k]??null:row[k]; return out; }, {});
 // Deterministic JSON: fixed key order per row, 2-space indent, trailing newline —
 // so two runs on the same logical state produce byte-identical output.
 export function stringifyScores(rows) { return JSON.stringify(rows.map(canonicalRow), null, 2) + '\n'; }

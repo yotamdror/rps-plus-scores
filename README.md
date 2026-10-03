@@ -49,6 +49,8 @@ same `runId` (so re-accepting or a retried dispatch never duplicates a run):
       "runId": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
       "name": "ROOKIE",
       "planet": "MARS",
+      "sponsor": "kuiper",
+      "grid": "RPSRRPSSRP",
       "score": 482300,
       "coin": 125000,
       "furthest": 8,
@@ -60,9 +62,11 @@ same `runId` (so re-accepting or a retried dispatch never duplicates a run):
 }
 ```
 
-- `name`: ≤14 chars, stored uppercased.
+- `name`: ≤32 chars, trimmed and stored uppercased; longer inputs are bounded to 32.
 - `planet`: one of the eight home worlds (MERCURY, VENUS, EARTH, MARS,
   JUPITER, SATURN, URANUS, NEPTUNE).
+- `sponsor`: optional canonical maker key (`kuiper`, `ponzi`, `adAstra`, `paperCorp`, `solarTie`) or null. Old rows without it remain unsponsored.
+- `grid`: optional run-share grid, the winning hands in order, one letter each (`R`/`P`/`S`), matching `/^[RPS]{0,40}$/`. A missing or invalid value is stored as null and the row shows no grid. Returned in every row.
 - `score` / `coin`: non-negative integers.
 - `furthest`: integer 1..8 — which match the run reached (8 = THE FINAL,
   win or lose; `won` is what tells the two apart).
